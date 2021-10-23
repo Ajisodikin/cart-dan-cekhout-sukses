@@ -1,0 +1,277 @@
+<!doctype html><html><head></head> 
+ <body> 
+  <h1> Hello </h1> 
+  <div>
+    This is a html example from Dcoder, 
+   <br> have fun. :) 
+  </div> link rel="stylesheet" href="style.css"&gt; 
+  <!--?php 
+// Mulai sesi
+session_start();
+require 'connect.php';
+require 'item.php';
+codepolitan
+Tutorial Membuat Shopping Cart dengan PHP
+Ditulis oleh Yuni97, dipublikasi pada Senin, 28 Agustus 2017 pukul 13.28
+
+image
+Shopping Cart/Keranjang belanja adalah salah satu fitur perangkat lunak e-commerce pada server web yang memungkinkan pengunjung untuk memilih item dan melakukan pembelian.
+
+Kita akan membuat tampilan shopping cart seperti pada gambar di bawah ini.
+
+
+
+Langkah-langkah
+1. Membuat file database product.sql
+Pertama kita buat database product dari database tersebut menyimpan data aplikasi. Kita perlu menyimpan informasi umum tentang pesanan (pruductid, orderid, price, quantity, id, name, detecreation, status, username, nama, price, quantity description) dan rincian masing-masing pesanan.
+
+Kita akan menggunakan tiga tabel (orderdetail, order, product).
+
+-- Struktur tabel untuk tabel `orderdetail`
+--
+
+CREATE TABLE IF NOT EXISTS `orderdetail` (
+  `productid` int(11) NOT NULL,
+  `orderid` int(11) NOT NULL,
+  `price` float NOT NULL,
+  `quantity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `oderdetail`
+--
+
+INSERT INTO `orderdetail` (`productid`, `orderid`, `price`, `quantity`) VALUES
+(1, 37, 100000, 3),
+(2, 36, 200000, 1),
+(3, 39, 300000, 4),
+(4, 40, 400000, 4);
+
+-- --------------------------------------------------------
+
+--
+-- Table struktur untuk tabel `order`
+--
+
+CREATE TABLE IF NOT EXISTS `order` (
+  `id` int(10) unsigned NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `datecreation` date NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `username` varchar(100) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `order`
+--
+
+INSERT INTO `order` (`id`, `name`, `datecreation`, `status`, `username`) VALUES
+(16, 'New Order', '2016-03-03', 0, 'acc2'),
+(17, 'New Order', '2016-03-03', 0, 'acc2'),
+(18, 'New Order', '2016-03-03', 0, 'acc2'),
+(19, 'New Order', '2016-03-03', 0, 'acc2'),
+(20, 'New Order', '2016-03-03', 0, 'acc2'),
+(21, 'New Order', '2016-03-03', 0, 'acc2'),
+(22, 'New Order', '2016-03-03', 0, 'acc2'),
+(23, 'New Order', '2016-03-03', 0, 'acc2'),
+(24, 'New Order', '2016-03-03', 0, 'acc2'),
+(25, 'New Order', '2016-03-03', 0, 'acc2'),
+(26, 'New Order', '2016-03-03', 0, 'acc2'),
+(27, 'New Order', '2016-03-03', 0, 'acc2'),
+(28, 'New Order', '2016-03-03', 0, 'acc2'),
+(29, 'New Order', '2016-03-03', 0, 'acc2'),
+(30, 'New Order', '2016-03-03', 0, 'acc2'),
+(31, 'New Order', '2016-03-03', 0, 'acc2'),
+(32, 'New Order', '2016-03-03', 0, 'acc2'),
+(33, 'New Order', '2016-03-03', 0, 'acc2'),
+(34, 'New Order', '2016-03-03', 0, 'acc2'),
+(35, 'New Order', '2016-03-03', 0, 'acc2'),
+(36, 'New Order', '2016-03-03', 0, 'acc2'),
+(37, 'New Order', '2016-03-03', 0, 'acc2'),
+(38, 'New Order', '2016-03-03', 0, 'acc2'),
+(39, 'New Order', '2016-03-03', 0, 'acc2'),
+(40, 'New Order', '2016-03-03', 0, 'acc2');
+
+-- --------------------------------------------------------
+
+--
+--Struktur tabel untuk table `product`
+--
+
+CREATE TABLE IF NOT EXISTS `product` (
+  `id` int(10) unsigned NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `price` float NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `description` varchar(100) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data untuk tabel `product`
+--
+
+INSERT INTO `product` (`id`, `name`, `price`, `quantity`, `description`) VALUES
+(1, 'Sony1', 100000, 2, 'good'),
+(2, 'Apple1', 200000, 3, 'good'),
+(3, 'Samsung1', 300000, 4, 'good'),
+(4, 'Apple2', 400000, 5, 'good');
+
+--
+-- Indeks untuk tabel yang dibuang
+--
+
+--
+-- Indeks untuk tabel `oderdetail`
+--
+ALTER TABLE `oderdetail`
+  ADD PRIMARY KEY (`productid`);
+
+--
+-- Indexes untuk tabel `order`
+--
+ALTER TABLE `order`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `product`
+--
+ALTER TABLE `product`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT untuk Tabel yang dibuang
+--AUTO_INCREMENT untuk table 'order'
+--
+ALTER TABLE `orderr`
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=41;
+--
+--AUTO_INCREMENT untuk tabel 'product'
+ALTER TABLE `product`
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+2. Membuat file connect.php
+File connect.php ini digunakan untuk membuat koneksi ke database untuk mengakses datanya.
+
+<?php 
+$servername = 'localhost';
+$username = 'root';
+$password = '';
+$db = 'product';
+//menghubungkan database ke mysql
+$con = mysqli_connect($servername, $username, $password, $db);
+if (!$con) {
+    die ("connection failed.". mysqli_connect_error()); 
+}
+ ?--> 3. Membuat file style.css Tujuan dari pembuatan fie style.css ini yaitu untuk mengatur tampilan file index.php dan cart.php. h2{ color: #4311CF; } table, th, td { border: 1px solid black; border-collapse: collapse; } th, td { padding: 5px; text-align: center; } table#t01 tr:nth-child(even) { background-color: #eee; } table#t01 tr:nth-child(odd) { background-color:#fff; } table#t01 th { background-color: black; color: white; } #saveimg{ width: 20px; height: 20px; } table tr td input{ width: 40px; } 4. Membat file index.php Setelah tampilan sudah dibuat kita akan membuat file index.php, tujuan dari file ini digunakan untuk menampilkan produk dari database. 
+  <link rel="stylesheet" href="style.css"> 
+  <!--?php 
+require 'connect.php';
+//List product dari database
+$sql = 'SELECT * FROM product';
+$result = mysqli_query($con, $sql);
+ ?--> 
+  <h2> Select the items: </h2> 
+  <table id="t01"> 
+   <tbody>
+    <tr> 
+     <th>Id</th> 
+     <th>Name</th> 
+     <th>Price</th> 
+     <th>Quantity (in stock)</th> 
+     <th>Buy</th> 
+    </tr> 
+    <!--?php while($product = mysqli_fetch_object($result)) { ?--> 
+    <tr> 
+     <td> 
+      <!--?php echo $product--->id; ?&gt; </td> 
+     <td> 
+      <!--?php echo $product--->name; ?&gt; </td> 
+     <td> Rp.
+      <!--?php echo $product--->price; ?&gt; </td> 
+     <td> 
+      <!--?php echo $product--->quantity; ?&gt; </td> 
+     <td> <a href="cart.php?id= <?php echo $product->id; ?> &amp;action=add">Order Now</a> </td> 
+    </tr> 
+    <!--?php } ?--> 
+   </tbody>
+  </table> 5 Membuat file item.php 
+  <!--?php 
+class Item{
+ var $id;//var int
+ //var string
+ var $name;
+ //var float
+ var $price;
+ //var int
+ var $quantity;
+}
+ ?--> Fungsi pembuatan class item dalam file item ini merupakan inisialisasi variabel yang kemudian akan dipanggil oleh file cart.php. 6. Membuat file cart.php Pembuatan file cart.php ini dimana pengguna memilih item pesanan, Adapun untuk melihat total harga yang kita beli pengguna harus mengklik (Save Button) , file cart.php membutuhkan data dari pesanan itu sendiri maka data terssebut akan simpan di database. 
+  <link rel="stylesheet" href="style.css"> 
+  <!--?php 
+// Mulai sesi
+session_start();
+require 'connect.php';
+require 'item.php';
+
+if(isset($_GET['id']) && !isset($_POST['update']))  { 
+    $sql = "SELECT * FROM product WHERE id=".$_GET['id'];
+    $result = mysqli_query($con, $sql);
+    $product = mysqli_fetch_object($result); 
+    $item = new Item();
+    $item--->id = $product-&gt;id; $item-&gt;name = $product-&gt;name; $item-&gt;price = $product-&gt;price; $iteminstock = $product-&gt;quantity; $item-&gt;quantity = 1; //Periksa produk dalam keranjang $index = -1; $cart = unserialize(serialize($_SESSION['cart'])); for($i=0; $i
+  <count($cart);$i++) if ($cart[$i]->
+   id == $_GET['id']){ $index = $i; break; } if($index == -1) $_SESSION['cart'][] = $item; //$ _SESSION ['cart']: set $ cart sebagai variabel _session else { if (($cart[$index]-&gt;quantity) &lt; $iteminstock) $cart[$index]-&gt;quantity ++; $_SESSION['cart'] = $cart; } } //Menghapus produk dalam keranjang if(isset($_GET['index']) &amp;&amp; !isset($_POST['update'])) { $cart = unserialize(serialize($_SESSION['cart'])); unset($cart[$_GET['index']]); $cart = array_values($cart); $_SESSION['cart'] = $cart; } // Perbarui jumlah dalam keranjang if(isset($_POST['update'])) { $arrQuantity = $_POST['quantity']; $cart = unserialize(serialize($_SESSION['cart'])); for($i=0; $i
+   <count($cart);$i++) { $cart[$i]->
+    quantity = $arrQuantity[$i]; } $_SESSION['cart'] = $cart; } ?&gt; 
+    <h2> Items in your cart: </h2> 
+    <form method="POST"> 
+     <table id="t01"> 
+      <tbody>
+       <tr> 
+        <th>Option</th> 
+        <th>Id</th> 
+        <th>Name</th> 
+        <th>Price</th> 
+        <th>Quantity</th> 
+        <th>Total</th> 
+       </tr> 
+       <!--?php 
+     $cart = unserialize(serialize($_SESSION['cart']));
+      $s = 0;
+      $index = 0;
+     for($i=0; $i<count($cart); $i++){
+         $s += $cart[$i]--->price * $cart[$i]-&gt;quantity; ?&gt; 
+       <tr> 
+        <td><a href="cart.php?index=<?php echo $index; ?>" onclick="return confirm('Are you sure?')">Delete</a> </td> 
+        <td> 
+         <!--?php echo $cart[$i]--->id; ?&gt; </td> 
+        <td> 
+         <!--?php echo $cart[$i]--->name; ?&gt; </td> 
+        <td>Rp. 
+         <!--?php echo $cart[$i]--->price; ?&gt; </td> 
+        <td> <input type="number" min="1" value="<?php echo $cart[$i]->quantity; ?>" name="quantity[]"> </td> 
+        <td> Rp.
+         <!--?php echo $cart[$i]--->price * $cart[$i]-&gt;quantity; ?&gt; </td> 
+       </tr> 
+       <!--?php 
+         $index++;
+     } ?--> 
+       <tr> 
+        <td colspan="5" style="text-align:right; font-weight:bold">Sum <input id="saveimg" type="image" src="images/save.png" name="update" alt="Save Button"> <input type="hidden" name="update"> </td> 
+        <td> Rp.
+         <!--?php echo $s; ?--> </td> 
+       </tr> 
+      </tbody>
+     </table> 
+    </form> 
+    <br> 
+    <a href="index.php">Continue Shopping</a> | 
+    <a href="checkout.php">Checkout</a> 
+    <!--?php 
+if(isset($_GET["id"]) || isset($_GET["index"])){
+ header('Location: cart.php');
+} 
+?--> 
+   </count($cart);$i++)>
+  </count($cart);$i++)>
+ 
+</body></html>
